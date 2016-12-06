@@ -12,14 +12,13 @@
 
 class _TERM {
 	private:
-		int			seq, timeout;
+		int			seq, timeout,error;
 		char 		cmdbuf[__CMDLEN],*cmdp;
 	public:
 		_TERM() {
 			seq=timeout=0;
 			cmdp=cmdbuf;
 		};
-	int		error;
 	bool	Cmd(int c);
 	char	*Cmd(void);
 	int		Escape(void);
@@ -27,7 +26,8 @@ class _TERM {
 	void	*Parser(void *v);
 		
 	virtual void Prompt(void);
-	virtual int Decode(char *) {return 0;};
+	virtual int Token(int)			{return 0;};
+	virtual int Decode(char *)	{return 0;};
 };
 
 #endif

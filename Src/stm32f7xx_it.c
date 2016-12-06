@@ -150,10 +150,6 @@ void OTG_FS_IRQHandler(void)
   HAL_PCD_IRQHandler(&hpcd);
   HAL_HCD_IRQHandler(&hhcd);
 }
-void __OTG_FS_IRQHandler(void)
-{
-  HAL_PCD_IRQHandler(&hpcd);
-  HAL_HCD_IRQHandler(&hhcd);
-}
+
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

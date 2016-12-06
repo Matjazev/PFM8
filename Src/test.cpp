@@ -46,12 +46,13 @@ class _CONSOLE:_TERM {
 	static void *Parse(_CONSOLE *t) { return t->Parser(t->io); };
 	virtual void Prompt(void);
 	virtual int Decode(char *);
+	virtual int Token(int);
 };
-
+//_________________________________________________________________________________
 _CONSOLE::_CONSOLE(_io *p) { 
 	io=p; 
 }
-
+//_________________________________________________________________________________
 void _CONSOLE::Prompt(void) {
 	printf("\r\n");
 	if(f_getcwd(lfn,_MAX_LFN)==FR_OK && f_opendir(&dir,lfn)==FR_OK) {
@@ -62,8 +63,7 @@ void _CONSOLE::Prompt(void) {
 	} else
 		printf(">"); 		
 }
-
-	
+//_________________________________________________________________________________
 int _CONSOLE::Decode(char *p) {
 	char *sc[]={NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	int i=0,n=0,len=1;
@@ -299,7 +299,21 @@ int	wbuf[SECTOR_SIZE];
 			return _PARSE_ERR_SYNTAX;
 	}
 	return _PARSE_OK;
-	}
+}
+//_________________________________________________________________________________
+int	_CONSOLE::Token(int t) {
+		switch(t) {
+			case __F1:
+				printf("F1");
+			break;
+			case __F2:
+				printf("F1");
+			break;
+			default:
+				return _PARSE_ERR_SYNTAX;
+		}
+		return _PARSE_OK;
+}
 //_________________________________________________________________________________
 int 			_CONSOLE::wcard(char *t, char *s) {
 					return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && wcard(t+1,s+1) : 
@@ -351,6 +365,16 @@ FILINFO		fno;
 //
 //
 extern "C" {
+extern PCD_HandleTypeDef hpcd;
+extern HCD_HandleTypeDef hhcd;
+void __OTG_FS_IRQHandler(void)
+{
+  if(hpcd.Instance)
+		HAL_PCD_IRQHandler(&hpcd);
+  if(hhcd.Instance)
+		HAL_HCD_IRQHandler(&hhcd);
+}
+
 void	console_app(_io *io) {
 	_proc_add((void *)_CONSOLE::Parse,new _CONSOLE(io),(char *)"test",0);
 }

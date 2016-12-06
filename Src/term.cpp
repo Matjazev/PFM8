@@ -129,10 +129,14 @@ int			i;
 							NVIC_SystemReset();
 						break;
 						default:
-							if(Cmd(i)) {
-								int err=Decode(Cmd());
-								if(err != 0)
-									printf("... WTF(%d)",err);
+							if(i>0xff) {
+								error=Token(i);
+								if(error != 0)
+									printf("... WTF(%d) ",error);
+							}	else if(Cmd(i)) {
+								error=Decode(Cmd());
+								if(error != 0)
+									printf("... WTF(%d)",error);
 								Prompt();
 							}
 					}

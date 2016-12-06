@@ -314,12 +314,14 @@ __weak uint32_t HAL_GetTick(void)
   * @param Delay: specifies the delay time length, in milliseconds.
   * @retval None
   */
+void _proc_loop(void);
 __weak void HAL_Delay(__IO uint32_t Delay)
 {
   uint32_t tickstart = 0;
   tickstart = HAL_GetTick();
   while((HAL_GetTick() - tickstart) < Delay)
   {
+		_proc_loop();
   }
 }
 
