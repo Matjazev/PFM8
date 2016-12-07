@@ -57,8 +57,6 @@
 static void SystemClock_Config(void);
 static void Error_Handler(void);
 static void CPU_CACHE_Enable(void);
-
-void	App_Init(void);
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -80,7 +78,7 @@ void	App_Init(void);
 //	return	ITM_SendChar(c);
 //}
 
-int main(void)
+void F7_init(void)
 {
   /* Enable the CPU Cache */
   CPU_CACHE_Enable();
@@ -101,16 +99,13 @@ int main(void)
 //	console_app(itm);	
 //  _stdio(itm);
 //}
-
-
-	App_Init();
-	while (1)
-  {
-//		__time__=HAL_GetTick();
-		_proc_loop();
-  }
 }
-
+/*-----------------------------------------------------------------------*/
+/**
+  * @brief  Initializes the storage unit (medium)       
+  * @param  lun: Logical unit number
+  * @retval Status (0 : OK / -1 : Error)
+  */
 void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
 {
   switch(id)
@@ -131,7 +126,22 @@ void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
     break; 
   }
 }
+/*-----------------------------------------------------------------------*/
+/**
+  * @brief  Initializes the storage unit (medium)       
+  * @param  lun: Logical unit number
+  * @retval Status (0 : OK / -1 : Error)
+  */
+extern PCD_HandleTypeDef hpcd;
+extern HCD_HandleTypeDef hhcd;
 
+void __OTG_FS_IRQHandler(void)
+{
+  if(hpcd.Instance)
+		HAL_PCD_IRQHandler(&hpcd);
+  if(hhcd.Instance)
+		HAL_HCD_IRQHandler(&hhcd);
+}
 
 /**
   * @brief  System Clock Configuration

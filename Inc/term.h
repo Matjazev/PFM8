@@ -25,7 +25,7 @@ class _TERM {
 	void	Repeat(int);
 	void	*Parser(void *v);
 		
-	virtual void Prompt(void);
+	virtual void Newline(void);
 	virtual int Token(int)			{return 0;};
 	virtual int Decode(char *)	{return 0;};
 };

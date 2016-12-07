@@ -44,7 +44,7 @@ class _CONSOLE:_TERM {
 		_CONSOLE(_io *);
 	
 	static void *Parse(_CONSOLE *t) { return t->Parser(t->io); };
-	virtual void Prompt(void);
+	virtual void Newline(void);
 	virtual int Decode(char *);
 	virtual int Token(int);
 };
@@ -53,7 +53,7 @@ _CONSOLE::_CONSOLE(_io *p) {
 	io=p; 
 }
 //_________________________________________________________________________________
-void _CONSOLE::Prompt(void) {
+void _CONSOLE::Newline(void) {
 	printf("\r\n");
 	if(f_getcwd(lfn,_MAX_LFN)==FR_OK && f_opendir(&dir,lfn)==FR_OK) {
 		if(lfn[strlen(lfn)-1]=='/')
@@ -305,9 +305,11 @@ int	_CONSOLE::Token(int t) {
 		switch(t) {
 			case __F1:
 				printf("F1");
+				Newline();
 			break;
 			case __F2:
-				printf("F1");
+				printf("F2");
+				Newline();
 			break;
 			default:
 				return _PARSE_ERR_SYNTAX;
@@ -315,92 +317,83 @@ int	_CONSOLE::Token(int t) {
 		return _PARSE_OK;
 }
 //_________________________________________________________________________________
-int 			_CONSOLE::wcard(char *t, char *s) {
-					return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && wcard(t+1,s+1) : 
-						!*t : 
-							wcard(t+1,s) || (*s && wcard(t,s+1));
+int	_CONSOLE::wcard(char *t, char *s) {
+			return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && wcard(t+1,s+1) : 
+				!*t : 
+					wcard(t+1,s) || (*s && wcard(t,s+1));
 }
 //_________________________________________________________________________________
-int 		 _CONSOLE::find_recurse (char * dir_name, char *w, int fact) {
-DIR				dir;
-FILINFO		fno;
-					if (f_opendir(&dir,dir_name) != FR_OK)
-						return (EXIT_FAILURE);
-					while (1) {
-						f_readdir(&dir,&fno);
-						if (!dir.sect)
-							break;
-						else {
-							char *p=fno.fname;
-								if (!strcmp (p, "..") || !strcmp (p, "."))
-								continue;
-							if (snprintf (lfn, sizeof(lfn), "%s/%s", dir_name, p) >= sizeof(lfn))
-								return  (EXIT_FAILURE);	
+int	_CONSOLE::find_recurse (char * dir_name, char *w, int fact) {
+DIR	dir;
+FILINFO	fno;
+		if (f_opendir(&dir,dir_name) != FR_OK)
+			return (EXIT_FAILURE);
+		while (1) {
+			f_readdir(&dir,&fno);
+			if (!dir.sect)
+				break;
+			else {
+				char *p=fno.fname;
+					if (!strcmp (p, "..") || !strcmp (p, "."))
+					continue;
+				if (snprintf (lfn, sizeof(lfn), "%s/%s", dir_name, p) >= sizeof(lfn))
+					return  (EXIT_FAILURE);	
+				if (fno.fattrib & AM_DIR)
+						find_recurse (lfn,w,fact);
+				switch(fact) {
+					case _LIST:
+						if(wcard(w,p)) {
+							char *q=strchr(dir_name,'/');
+							++q;
+							printf("\r\n%s",lfn);
 							if (fno.fattrib & AM_DIR)
-									find_recurse (lfn,w,fact);
-							switch(fact) {
-								case _LIST:
-									if(wcard(w,p)) {
-										char *q=strchr(dir_name,'/');
-										++q;
-										printf("\r\n%s",lfn);
-										if (fno.fattrib & AM_DIR)
-											printf("/");
-										else
-											printf("%*d",32-strlen(lfn),(int)fno.fsize);
-									}
-								break;
-								case _ERASE:
-									if(wcard(w,p))
-										f_unlink(p);
-								}
+								printf("/");
+							else
+								printf("%*d",32-strlen(lfn),(int)fno.fsize);
 						}
+					break;
+					case _ERASE:
+						if(wcard(w,p))
+							f_unlink(p);
 					}
-					if (f_closedir(&dir) != FR_OK)
-						return (EXIT_FAILURE);
-					return FR_OK;
+			}
+		}
+		if (f_closedir(&dir) != FR_OK)
+			return (EXIT_FAILURE);
+		return FR_OK;
 }
 //_________________________________________________________________________________
 // console object C wrapper; adds or removes new object into the main process loop
 //
 //
 extern "C" {
-extern PCD_HandleTypeDef hpcd;
-extern HCD_HandleTypeDef hhcd;
-void __OTG_FS_IRQHandler(void)
-{
-  if(hpcd.Instance)
-		HAL_PCD_IRQHandler(&hpcd);
-  if(hhcd.Instance)
-		HAL_HCD_IRQHandler(&hhcd);
-}
 
 void	console_app(_io *io) {
-	_proc_add((void *)_CONSOLE::Parse,new _CONSOLE(io),(char *)"test",0);
+			_proc_add((void *)_CONSOLE::Parse,new _CONSOLE(io),(char *)"test",0);
 }
 
 void	console_remove(_io *io) {
-	_proc_remove((void *)_CONSOLE::Parse,io);
+			_proc_remove((void *)_CONSOLE::Parse,io);
 }
 
-void		Initialize_host_msc() {
-				USBH_Init(&USBH_Device, USBH_UserProcess, 0);
-				USBH_RegisterClass(&USBH_Device, USBH_MSC_CLASS);
-				USBH_Start(&USBH_Device);
-				_proc_add((void *)USBH_Process,&USBH_Device,(char *)"usb host",0);
+void	Initialize_host_msc() {
+			USBH_Init(&USBH_Device, USBH_UserProcess, 0);
+			USBH_RegisterClass(&USBH_Device, USBH_MSC_CLASS);
+			USBH_Start(&USBH_Device);
+			_proc_add((void *)USBH_Process,&USBH_Device,(char *)"usb host",0);
 }
 
-void		Initialize_device_msc() {
-				USBD_Init(&USBD_Device, &MSC_Desc, 0);
-				USBD_RegisterClass(&USBD_Device, USBD_MSC_CLASS);
-				USBD_MSC_RegisterStorage(&USBD_Device, &USBD_DISK_fops);
-				USBD_Start(&USBD_Device);	
+void	Initialize_device_msc() {
+			USBD_Init(&USBD_Device, &MSC_Desc, 0);
+			USBD_RegisterClass(&USBD_Device, USBD_MSC_CLASS);
+			USBD_MSC_RegisterStorage(&USBD_Device, &USBD_DISK_fops);
+			USBD_Start(&USBD_Device);	
 }
 
-void		Initialize_device_vcp() {
-				USBD_Init(&USBD_Device, &VCP_Desc, 0);
-				USBD_RegisterClass(&USBD_Device, USBD_CDC_CLASS);
-				USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_fops);
-				USBD_Start(&USBD_Device);
+void	Initialize_device_vcp() {
+			USBD_Init(&USBD_Device, &VCP_Desc, 0);
+			USBD_RegisterClass(&USBD_Device, USBD_CDC_CLASS);
+			USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_fops);
+			USBD_Start(&USBD_Device);
 }
 }

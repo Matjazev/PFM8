@@ -45,7 +45,7 @@ char	*_TERM::Cmd(void) {
 * Output				:
 * Return				:
 *******************************************************************************/
-void	_TERM::Prompt(void) {
+void	_TERM::Newline(void) {
 			printf("\r\n>");
 }
 /*******************************************************************************
@@ -137,7 +137,7 @@ int			i;
 								error=Decode(Cmd());
 								if(error != 0)
 									printf("... WTF(%d)",error);
-								Prompt();
+								Newline();
 							}
 					}
 				} while(i != EOF);
