@@ -367,13 +367,16 @@ FILINFO	fno;
 //
 //
 extern "C" {
-
-void	console_app(_io *io) {
-			_proc_add((void *)_CONSOLE::Parse,new _CONSOLE(io),(char *)"test",0);
+extern void *ParseCom(_io *);
+	
+void	vcp_app(_io *io) {
+//			_proc_add((void *)_CONSOLE::Parse,new _CONSOLE(io),(char *)"test",0);
+			_proc_add((void *)ParseCom,io,(char *)"test",0);
 }
 
-void	console_remove(_io *io) {
-			_proc_remove((void *)_CONSOLE::Parse,io);
+void	vcp_app_remove(_io *io) {
+//			_proc_remove((void *)_CONSOLE::Parse,io);
+			_proc_remove((void *)ParseCom,io);
 }
 
 void	Initialize_host_msc() {

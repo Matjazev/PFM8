@@ -98,7 +98,7 @@ static int8_t CDC_Itf_Init(void)
 {
 	__com=_io_init(128,128);
 	_proc_add(VCP_DataTx,__com,"VCP_DataTx",0);
-	console_app(__com);
+	vcp_app(__com);
 
   /*##-5- Set Application Buffers ############################################*/
   USBD_CDC_SetTxBuffer(&USBD_Device, UserTxBuffer, 0);
@@ -116,7 +116,7 @@ static int8_t CDC_Itf_Init(void)
 static int8_t CDC_Itf_DeInit(void)
 {
 	_proc_remove(VCP_DataTx,__com);
-	console_remove(__com);
+	vcp_app_remove(__com);
 	_io_close(__com);
 	return USBD_OK;
 }

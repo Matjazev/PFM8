@@ -66,8 +66,8 @@
 extern	USBH_HandleTypeDef USBH_Device;
 extern	FATFS USBH_fatfs;
 void 		USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id);
-void		console_app(_io *);
-void		console_remove(_io *);
+void		vcp_app(_io *);
+void		vcp_app_remove(_io *);
 
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/

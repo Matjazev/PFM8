@@ -48,6 +48,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "proc.h"
+void	App_Init(void);
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -64,41 +65,15 @@ static void CPU_CACHE_Enable(void);
   * @param  None
   * @retval None
   */
-//volatile int			__time__;
-//volatile int32_t  ITM_RxBuffer=ITM_RXBUFFER_EMPTY; 
-
-//int	getITM(_buffer *p) {
-//		if(ITM_CheckChar())
-//			return ITM_ReceiveChar();
-//		else
-//			return EOF;
-//		}		
-////______________________________________________________________________________________
-//int	putITM(_buffer *p, int	c) {
-//	return	ITM_SendChar(c);
-//}
-
-void F7_init(void)
+int main(void)
 {
-  /* Enable the CPU Cache */
   CPU_CACHE_Enable();
-  /* STM32F7xx HAL library initialization:
-       - Configure the Flash ART accelerator on ITCM interface
-       - Configure the Systick to generate an interrupt each 1 msec
-       - Set NVIC Group Priority to 4
-       - Low Level Initialization
-  */
   HAL_Init();
-  /* Configure the System clock to have a frequency of 216 MHz */
   SystemClock_Config();
-  /* ITM tracking console; can be removed on an embedded application
-  */	
-//{	_io *itm=_io_init(128,128);
-//	itm->get=getITM;
-//	itm->put=putITM;
-//	console_app(itm);	
-//  _stdio(itm);
-//}
+
+	App_Init();
+	while(_proc_loop());
+	return 0;
 }
 /*-----------------------------------------------------------------------*/
 /**
