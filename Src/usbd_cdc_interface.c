@@ -233,14 +233,13 @@ static void VCP_DataTx(_io *p) {
         UserTxBufPtrOut = 0;
       }
     }
-  }
-	if(_buffer_count(__com->tx) > 0) {
-	if(UserTxBufPtrOut > UserTxBufPtrIn) /* Roll-back */
-		UserTxBufPtrIn += _buffer_pull(__com->tx,&UserTxBuffer[UserTxBufPtrIn],UserTxBufPtrOut-UserTxBufPtrIn);
-	else 
-		UserTxBufPtrIn += _buffer_pull(__com->tx,&UserTxBuffer[UserTxBufPtrIn],APP_RX_DATA_SIZE-UserTxBufPtrIn);
-	if (UserTxBufPtrIn == APP_RX_DATA_SIZE)
-		UserTxBufPtrIn = 0;
-}
+  } else if(_buffer_count(__com->tx) > 0) {
+		if(UserTxBufPtrOut > UserTxBufPtrIn) /* Roll-back */
+			UserTxBufPtrIn += _buffer_pull(__com->tx,&UserTxBuffer[UserTxBufPtrIn],UserTxBufPtrOut-UserTxBufPtrIn);
+		else 
+			UserTxBufPtrIn += _buffer_pull(__com->tx,&UserTxBuffer[UserTxBufPtrIn],APP_RX_DATA_SIZE-UserTxBufPtrIn);
+		if (UserTxBufPtrIn == APP_RX_DATA_SIZE)
+			UserTxBufPtrIn = 0;
+	}
 }	
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
