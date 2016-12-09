@@ -13,11 +13,16 @@
  *
  * Copyright (c) 2012 Keil - An ARM Company. All rights reserved.
  *----------------------------------------------------------------------------*/
+#include "stm32f7xx_hal.h"
 #include "proc.h"
 //_________________________________________________________________________________
 FILE 		__stdout;
 FILE 		__stdin;
 FILE 		__stderr;
+
+#if defined (__DISC4__) || defined (__DISC7__)
+volatile int32_t  ITM_RxBuffer=ITM_RXBUFFER_EMPTY; 
+#endif
 //_________________________________________________________________________________
 _io			*_stdio(_io	*p) {
 _io			*io=__stdin.io;
@@ -32,6 +37,9 @@ int 		fputc(int c, FILE *f) {
 							_wait(2,_proc_loop);
 						if(f->io->file)
 							f_putc(c,f->io->file);
+#if defined (__DISC4__) || defined (__DISC7__)
+						ITM_SendChar(c);
+#endif
 					}
 					return c;
 				}
@@ -45,6 +53,11 @@ int			c=EOF;
 						c=f->io->get(f->io->rx);
 					if(f->io->file && c==EOF)
 						c=f_getc(f->io->file);
+
+#if defined (__DISC4__) || defined (__DISC7__)
+					if(c == EOF && ITM_CheckChar())
+						c = ITM_ReceiveChar();
+#endif
 					return c;
 				}
 				return f_getc((FIL *)f);
