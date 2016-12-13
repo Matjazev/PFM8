@@ -81,6 +81,8 @@ int main(void)
   * @param  lun: Logical unit number
   * @retval Status (0 : OK / -1 : Error)
   */
+extern void 		USBH_Iap(int);	
+
 void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
 {
   switch(id)
@@ -95,6 +97,7 @@ void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
     break;
     
   case HOST_USER_CONNECTION:
+//		USBH_Iap(0);	
     break;
 
   default:

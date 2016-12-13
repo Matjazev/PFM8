@@ -380,10 +380,10 @@ void	vcp_app_remove(_io *io) {
 }
 
 void	Initialize_host_msc() {
+			_proc_add((void *)USBH_Process,&USBH_Device,(char *)"usb host",0);
 			USBH_Init(&USBH_Device, USBH_UserProcess, 0);
 			USBH_RegisterClass(&USBH_Device, USBH_MSC_CLASS);
 			USBH_Start(&USBH_Device);
-			_proc_add((void *)USBH_Process,&USBH_Device,(char *)"usb host",0);
 }
 
 void	Initialize_device_msc() {
