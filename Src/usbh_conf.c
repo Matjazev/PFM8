@@ -203,12 +203,13 @@ void HAL_HCD_SOF_Callback(HCD_HandleTypeDef *hhcd)
   * @param  hhcd: HCD handle
   * @retval None
   */
+FATFS USBH_fatfs;
 void HAL_HCD_Connect_Callback(HCD_HandleTypeDef *hhcd)
 {
   USBH_LL_Connect(hhcd->pData);
   
   /* Register the file system object to the FatFs module */
-//  if(f_mount(&USBH_fatfs, "1:", 1) != FR_OK)
+//  if(f_mount(&USBH_fatfs, "0:", 1) != FR_OK)
 //  {  
 //  }
 }

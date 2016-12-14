@@ -72,6 +72,8 @@ int main(void)
   SystemClock_Config();
 
 	App_Init();
+//	do
+//		USBH_Process(&USBH_Device);
 	while(_proc_loop());
 	return 0;
 }
@@ -94,11 +96,11 @@ void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
     break;
     
   case HOST_USER_CLASS_ACTIVE:
+ 		USBH_Iap(0);	
     break;
     
   case HOST_USER_CONNECTION:
-//		USBH_Iap(0);	
-    break;
+   break;
 
   default:
     break; 
